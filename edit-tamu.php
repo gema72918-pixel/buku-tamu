@@ -1,20 +1,13 @@
 <?php
 $title = "Edit Data Tamu";
 require 'function.php';
+if($_SESSION['role'] != 'admin') {
+    header("Location: index.php");
+    exit;
+}
 include_once('templates/header.php');
-
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-if ($id === 0) {
-    header("Location: buku-tamu.php");
-    exit;
-}
-
-$t = get_tamu_by_id($id);
-if (!$t) {
-    header("Location: buku-tamu.php");
-    exit;
-}
-
+$id = $_GET['id'];
+$t = query("SELECT * FROM buku_tamu WHERE id_tamu = $id")[0];
 if (isset($_POST['simpan'])) {
     if (ubah($_POST) > 0) {
         echo "<script>alert('Data tamu berhasil diubah!'); document.location.href = 'buku-tamu.php';</script>";
@@ -35,8 +28,9 @@ if (isset($_POST['simpan'])) {
                 <h6 class="m-0 font-weight-bold text-primary">Form Edit Data Tamu</h6>
             </div>
             <div class="card-body">
-                <form method="POST">
+                <form method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="id_tamu" value="<?php echo $t['id_tamu']; ?>">
+                    <input type="hidden" name="gambarLama" value="<?php echo $t['gambar']; ?>">
                     <div class="form-group">
                         <label for="tanggal">Tanggal <span class="text-danger">*</span></label>
                         <input type="date" class="form-control" id="tanggal" name="tanggal" value="<?php echo $t['tanggal']; ?>" required>
@@ -60,6 +54,16 @@ if (isset($_POST['simpan'])) {
                     <div class="form-group">
                         <label for="kepentingan">Kepentingan <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="kepentingan" name="kepentingan" value="<?php echo htmlspecialchars($t['kepentingan']); ?>" placeholder="Masukkan keperluan" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gambar">Gambar</label>
+                        <?php if($t['gambar']): ?>
+                        <div class="mb-2">
+                            <img src="assets/upload_gambar/<?php echo $t['gambar']; ?>" width="100" height="100" style="object-fit:cover;">
+                        </div>
+                        <?php endif; ?>
+                        <input type="file" class="form-control-file" id="gambar" name="gambar">
+                        <small class="form-text text-muted">Kosongkan jika tidak ingin mengubah gambar</small>
                     </div>
                     <hr>
                     <div class="form-group mb-0">

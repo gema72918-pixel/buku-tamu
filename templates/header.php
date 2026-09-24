@@ -1,3 +1,10 @@
+<?php
+session_start();
+if(!isset($_SESSION['login'])) {
+    header("Location: login.php");
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -14,8 +21,8 @@
     <div id="wrapper">
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.php">
-                <div class="sidebar-brand-icon"><i class="fas fa-book"></i></div>
-                <div class="sidebar-brand-text mx-3">Buku Tamu</div>
+                <div class="sidebar-brand-icon"><i class="fas fa-school"></i></div>
+                <div class="sidebar-brand-text mx-3">Zie BukuTamu</div>
             </a>
             <hr class="sidebar-divider my-0">
             <li class="nav-item <?php echo (basename($_SERVER['PHP_SELF']) == 'index.php') ? 'active' : ''; ?>">
@@ -26,10 +33,26 @@
             </li>
             <hr class="sidebar-divider">
             <div class="sidebar-heading">Menu</div>
+            <?php if($_SESSION['role'] == 'admin'): ?>
             <li class="nav-item <?php echo (basename($_SERVER['PHP_SELF']) == 'buku-tamu.php') ? 'active' : ''; ?>">
                 <a class="nav-link" href="buku-tamu.php">
                     <i class="fas fa-fw fa-book"></i>
                     <span>Buku Tamu</span>
+                </a>
+            </li>
+            <?php endif; ?>
+            <?php if($_SESSION['role'] == 'operator'): ?>
+            <li class="nav-item <?php echo (basename($_SERVER['PHP_SELF']) == 'users.php') ? 'active' : ''; ?>">
+                <a class="nav-link" href="users.php">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>User</span>
+                </a>
+            </li>
+            <?php endif; ?>
+            <li class="nav-item <?php echo (basename($_SERVER['PHP_SELF']) == 'laporan.php') ? 'active' : ''; ?>">
+                <a class="nav-link" href="laporan.php">
+                    <i class="fas fa-fw fa-file-alt"></i>
+                    <span>Laporan</span>
                 </a>
             </li>
             <hr class="sidebar-divider d-none d-md-block">
@@ -47,16 +70,11 @@
                         <div class="topbar-divider d-none d-sm-block"></div>
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Admin</span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $_SESSION['nama_lengkap']; ?></span>
                                 <i class="fas fa-user-circle fa-2x text-gray-400"></i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right shadow" aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Profil
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                <a class="dropdown-item" href="logout.php">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Keluar
                                 </a>

@@ -1,15 +1,15 @@
 <?php
 require 'function.php';
-
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-if ($id === 0) {
-    header("Location: buku-tamu.php");
+if($_SESSION['role'] != 'admin') {
+    header("Location: index.php");
     exit;
 }
-
-if (hapus_tamu($id) > 0) {
-    echo "<script>alert('Data tamu berhasil dihapus!'); document.location.href = 'buku-tamu.php';</script>";
-} else {
-    echo "<script>alert('Gagal menghapus data tamu!'); document.location.href = 'buku-tamu.php';</script>";
+$id = $_GET['id'];
+$tamu = query("SELECT * FROM buku_tamu WHERE id_tamu = $id")[0];
+if($tamu['gambar'] && file_exists('assets/upload_gambar/' . $tamu['gambar'])) {
+    unlink('assets/upload_gambar/' . $tamu['gambar']);
 }
+mysqli_query($koneksi, "DELETE FROM buku_tamu WHERE id_tamu = $id");
+header("Location: buku-tamu.php");
+exit;
 ?>

@@ -1,10 +1,12 @@
 <?php
 $title = "Data Buku Tamu";
 require 'function.php';
+if($_SESSION['role'] != 'admin') {
+    header("Location: index.php");
+    exit;
+}
 include_once('templates/header.php');
-
 $tamu = query("SELECT * FROM buku_tamu ORDER BY tanggal DESC");
-
 if (isset($_POST['tambah'])) {
     if (tambah($_POST) > 0) {
         echo "<script>alert('Data tamu berhasil ditambahkan!'); document.location.href = 'buku-tamu.php';</script>";
@@ -35,6 +37,7 @@ if (isset($_POST['tambah'])) {
                         <th>No HP</th>
                         <th>Bertemu</th>
                         <th>Kepentingan</th>
+                        <th>Gambar</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -48,6 +51,13 @@ if (isset($_POST['tambah'])) {
                         <td><?php echo htmlspecialchars($t['no_hp']); ?></td>
                         <td><?php echo htmlspecialchars($t['bertemu']); ?></td>
                         <td><?php echo htmlspecialchars($t['kepentingan']); ?></td>
+                        <td>
+                            <?php if($t['gambar']): ?>
+                            <img src="assets/upload_gambar/<?php echo $t['gambar']; ?>" width="50" height="50" style="object-fit:cover;">
+                            <?php else: ?>
+                            <span class="text-muted">-</span>
+                            <?php endif; ?>
+                        </td>
                         <td class="text-center">
                             <a href="edit-tamu.php?id=<?php echo $t['id_tamu']; ?>" class="btn btn-warning btn-sm" title="Edit">
                                 <i class="fas fa-edit"></i>
@@ -70,7 +80,7 @@ if (isset($_POST['tambah'])) {
                 <h5 class="modal-title"><i class="fas fa-plus-circle text-primary mr-2"></i>Tambah Data Tamu</h5>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
             </div>
-            <form method="POST">
+            <form method="POST" enctype="multipart/form-data">
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="tanggal">Tanggal <span class="text-danger">*</span></label>
@@ -95,6 +105,11 @@ if (isset($_POST['tambah'])) {
                     <div class="form-group">
                         <label for="kepentingan">Kepentingan <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="kepentingan" name="kepentingan" placeholder="Masukkan keperluan" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gambar">Gambar</label>
+                        <input type="file" class="form-control-file" id="gambar" name="gambar">
+                        <small class="form-text text-muted">Format: JPG, JPEG, PNG, GIF. Maks 2MB</small>
                     </div>
                 </div>
                 <div class="modal-footer">
